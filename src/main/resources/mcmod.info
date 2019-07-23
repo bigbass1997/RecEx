@@ -1,0 +1,16 @@
+[
+{
+  "modid": "RecEx",
+  "name": "Recipe Exporter",
+  "description": "Exports all recipes, including GT5U recipes, to JSON files for use in other programs.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["bigbass1997"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
