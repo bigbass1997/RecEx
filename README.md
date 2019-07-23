@@ -7,6 +7,19 @@ Since the export process happens while in a loaded world/server, any recipe modi
 ### Usage
 The default keybind to open the exporter's GUI is 'k', however you should be able to remap this in the controls menu of Minecraft. At this time, the GUI is rather simple, including just a single button that will execute the export process. Hit ESC to close the GUI. The exported files will be stored in `RecEx-Records/`, at the root of the minecraft instance.
 
+### Recipe Source Compatibility
+| Source | Status |
+| ------ | ------ |
+| Shaped | Fully Supported |
+| Shapeless | Fully Supported |
+| Oredict Shaped | None |
+| Oredict Shapeless | None |
+| Gregtech 5 | Fully Supported (including all mods using the Gregtech API) |
+| Bartworks | Fully Supported
+| GT++ | All except possibly 1-4 recipes
+| Forestry | None
+| Thaumcraft 4 | None
+
 ### Building
 Building the mod can be done using the gradle wrapper provided in the repo, with the command `gradlew build`.
 
