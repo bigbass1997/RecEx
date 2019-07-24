@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.*;
 
 import com.bigbass.recex.RecipeExporterMod;
 import com.bigbass.recex.recipes.gregtech.GregtechMachine;
@@ -20,11 +18,14 @@ import com.google.gson.GsonBuilder;
 import gregtech.api.util.GT_LanguageManager;
 import gregtech.api.util.GT_Recipe;
 import gregtech.api.util.GT_Recipe.GT_Recipe_Map;
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class RecipeExporter {
 	
@@ -59,6 +60,7 @@ public class RecipeExporter {
 		sources.add(getGregtechRecipes());
 		sources.add(getShapedRecipes());
 		sources.add(getShapelessRecipes());
+		sources.add(getOreDictShapedRecipes());
 		//TODO Support Oredicted Shaped and Shapeless Ore recipes
 		
 		root.put("sources", sources);
@@ -153,7 +155,58 @@ public class RecipeExporter {
 		
 		return data;
 	}
-	
+
+	private Object getOreDictShapedRecipes(){
+		Hashtable<String, Object> data = new Hashtable<>();
+
+		data.put("type", "shapedOre");
+
+		List<OreDictShapedRecipe> retRecipes = new ArrayList<>();
+		List<?> recipes = CraftingManager.getInstance().getRecipeList();
+		for(Object obj : recipes){
+			if(obj instanceof ShapedOreRecipe){
+				ShapedOreRecipe original = (ShapedOreRecipe) obj;
+				OreDictShapedRecipe rec = new OreDictShapedRecipe();
+
+				for(Object stack : original.getInput()){
+					if (stack instanceof ItemStack) {
+						Item item = RecipeUtil.formatRegularItemStack((ItemStack)stack);
+						rec.iI.add(item);
+					}else if (stack instanceof String){
+						rec.iI.add(new OreDictItem(getReplacements((String)stack).toArray(new Item[0])));
+					}else if (stack instanceof String[]){
+						Set<Item> multipleReplacemetns = new HashSet<>();
+						for (String s : (String[]) stack){
+							multipleReplacemetns.addAll(getReplacements((String)stack));
+						}
+						rec.iI.add(multipleReplacemetns.toArray(new Item[0]));
+					}else if (stack instanceof net.minecraft.item.Item){
+						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((net.minecraft.item.Item)stack)));
+					}else if (stack instanceof Block){
+						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((Block)stack,1,Short.MAX_VALUE)));
+					}
+				}
+
+				rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
+
+				retRecipes.add(rec);
+			}
+		}
+		data.put("recipes", retRecipes);
+
+		return data;
+	}
+
+	private Set<Item> getReplacements(String name){
+		List<ItemStack> recipeItemList = OreDictionary.getOres(name);
+		Set<Item> replacements = new HashSet<>();
+		for (ItemStack inList : recipeItemList){
+			Item item = RecipeUtil.formatRegularItemStack(inList);
+			replacements.add(item);
+		}
+		return replacements;
+	}
+
 	private Object getShapedRecipes(){
 		Hashtable<String, Object> data = new Hashtable<String, Object>();
 		
@@ -221,10 +274,7 @@ public class RecipeExporter {
 			writer.close();
 			
 			RecipeExporterMod.log.info("Recipes have been exported.");
-		} catch (IOException e) {
-			e.printStackTrace();
-			RecipeExporterMod.log.error("Recipes failed to save!");
-		} catch (NullPointerException e) {
+		} catch (IOException | NullPointerException e) {
 			e.printStackTrace();
 			RecipeExporterMod.log.error("Recipes failed to save!");
 		}
