@@ -12,7 +12,7 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = RecipeExporterMod.MODID, version = RecipeExporterMod.VERSION)
+@Mod(modid = RecipeExporterMod.MODID, version = RecipeExporterMod.VERSION, acceptableRemoteVersions = "*")
 public class RecipeExporterMod
 {
 	public static final String MODID = "RecEx";
