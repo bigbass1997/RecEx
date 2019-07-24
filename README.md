@@ -12,7 +12,7 @@ The default keybind to open the exporter's GUI is 'k', however you should be abl
 | ------ | ------ |
 | Shaped | Fully Supported |
 | Shapeless | Fully Supported |
-| Oredict Shaped | None |
+| Oredict Shaped | Fully Supported |
 | Oredict Shapeless | None |
 | Gregtech 5 | Fully Supported (including all mods using the Gregtech API) |
 | Bartworks | Fully Supported
