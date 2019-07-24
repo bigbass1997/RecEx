@@ -29,4 +29,4 @@ This mod is licensed under Creative Commons Attribution-NonCommercial-ShareAlike
 A full copy of the project license can be viewed in "LICENSE.txt", and a summary plus additional links are provided in "LICENSE.md".
 
 ### Contributions
-Posting issues, feature ideas, and pull requests are highly encouraged! However, please note, due to the early age of this mod, PR's may be left open until an appropriate time is reached for the changes to be implemented. If this is the case for a particular PR, a maintainer will reply to the PR to make note of this.
+If you are interested in contributing, feel free to submit issues or pull requests as you see fit. I'm sure there are things that could be programmed better or perhaps more efficiently, but since this is being developed alongside NotEnoughProduction and may change at any moment, I am not too worried about how good/bad the code is for the time being.
