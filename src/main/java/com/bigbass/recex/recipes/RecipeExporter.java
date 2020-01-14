@@ -26,6 +26,7 @@ import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 public class RecipeExporter {
 	
@@ -61,8 +62,9 @@ public class RecipeExporter {
 		sources.add(getShapedRecipes());
 		sources.add(getShapelessRecipes());
 		sources.add(getOreDictShapedRecipes());
-		//TODO Support Oredicted Shaped and Shapeless Ore recipes
-		
+		sources.add(getOreDictShapelessRecipes());
+		sources.add(getReplacements());
+
 		root.put("sources", sources);
 		
 		Gson gson = (new GsonBuilder()).serializeNulls().create();
@@ -172,18 +174,14 @@ public class RecipeExporter {
 					if (stack instanceof ItemStack) {
 						Item item = RecipeUtil.formatRegularItemStack((ItemStack)stack);
 						rec.iI.add(item);
-					}else if (stack instanceof String){
-						rec.iI.add(new OreDictItem(getReplacements((String)stack).toArray(new Item[0])));
-					}else if (stack instanceof String[]){
-						Set<Item> multipleReplacemetns = new HashSet<>();
-						for (String s : (String[]) stack){
-							multipleReplacemetns.addAll(getReplacements((String)stack));
-						}
-						rec.iI.add(multipleReplacemetns.toArray(new Item[0]));
 					}else if (stack instanceof net.minecraft.item.Item){
 						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((net.minecraft.item.Item)stack)));
 					}else if (stack instanceof Block){
 						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((Block)stack,1,Short.MAX_VALUE)));
+					}else if (stack instanceof ArrayList && !((ArrayList)stack).isEmpty()) {
+						@SuppressWarnings("unchecked")
+						ItemStack item = ((ArrayList<ItemStack>)stack).get(0);
+						rec.iI.add(getOreDictNames(item));
 					}
 				}
 
@@ -197,14 +195,75 @@ public class RecipeExporter {
 		return data;
 	}
 
-	private Set<Item> getReplacements(String name){
+	private Object getOreDictShapelessRecipes(){
+		HashMap<String, Object> data = new HashMap<>();
+
+		data.put("type", "shapelessOre");
+
+		List<OreDictShapelessRecipe> retRecipes = new ArrayList<>();
+		List<?> recipes = CraftingManager.getInstance().getRecipeList();
+		for(Object obj : recipes){
+			if(obj instanceof ShapelessOreRecipe){
+				ShapelessOreRecipe original = (ShapelessOreRecipe) obj;
+				OreDictShapelessRecipe rec = new OreDictShapelessRecipe();
+
+				for(Object stack : original.getInput()){
+					if (stack instanceof ItemStack) {
+						Item item = RecipeUtil.formatRegularItemStack((ItemStack)stack);
+						rec.iI.add(item);
+					}else if (stack instanceof net.minecraft.item.Item){
+						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((net.minecraft.item.Item)stack)));
+					}else if (stack instanceof Block){
+						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((Block)stack, 1, Short.MAX_VALUE)));
+					}else if (stack instanceof ArrayList && !((ArrayList)stack).isEmpty()){
+						@SuppressWarnings("unchecked")
+						ItemStack item = ((ArrayList<ItemStack>)stack).get(0);
+						rec.iI.add(getOreDictNames(item));
+					}
+				}
+
+				rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
+
+				retRecipes.add(rec);
+			}
+		}
+		data.put("recipes", retRecipes);
+
+		return data;
+	}
+
+	private List<String> getOreDictNames(ItemStack itemStack){
+		int[] ids = OreDictionary.getOreIDs(itemStack);
+		ArrayList<String> names = new ArrayList<>();
+		for(int id : ids){
+			names.add(OreDictionary.getOreName(id));
+		}
+		return names;
+	}
+
+	private Object getReplacements(){
+		HashMap<String, Object> data = new HashMap<>();
+
+		data.put("type", "replacements");
+
+		List<OreDictItem> oreDictItems = new ArrayList<>();
+		String[] oreNames = OreDictionary.getOreNames();
+		for(String name : oreNames){
+			oreDictItems.add(new OreDictItem(name, getReplacements(name)));
+		}
+		data.put("items", oreDictItems);
+
+		return data;
+	}
+
+	private List<Item> getReplacements(String name){
 		List<ItemStack> recipeItemList = OreDictionary.getOres(name);
 		Set<Item> replacements = new HashSet<>();
 		for (ItemStack inList : recipeItemList){
 			Item item = RecipeUtil.formatRegularItemStack(inList);
 			replacements.add(item);
 		}
-		return replacements;
+		return new ArrayList<>(replacements);
 	}
 
 	private Object getShapedRecipes(){
