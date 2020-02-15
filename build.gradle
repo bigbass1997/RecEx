@@ -31,18 +31,21 @@ import de.undercouch.gradle.tasks.download.Download
 apply plugin: 'forge'
 apply plugin: 'eclipse'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 eclipse {
 	classpath {
 		downloadJavadoc = true
 		downloadSources = true
 	}
 }
-eclipse.classpath.file.withXml {x ->
+/* eclipse.classpath.file.withXml {x ->
 	def n = x.asNode()
 	n.classpathentry.find {
-		it.@kind == 'lib' && it.@path.contains('gregtech-5.09.33.17-dev')
-	}.@sourcepath = 'libs/gregtech-5.09.33.17-src.zip'
-}
+		it.@kind == 'lib' && it.@path.contains('gregtech-5.09.33.31-dev')
+	}.@sourcepath = 'libs/gregtech-5.09.33.31-src.zip'
+} */
 
 version = "0.0.1"
 group = "com.bigbass.recex"
@@ -107,10 +110,10 @@ dependencies {
 
 task getGregTech(type: Download) {
     onlyIf {
-        !file("libs/gregtech-5.09.33.17-dev.jar").exists()
+        !file("libs/gregtech-5.09.33.31-dev.jar").exists()
     }
-    src "http://jenkins.usrv.eu:8080/job/Gregtech-5-Unofficial/306/artifact/build/libs/gregtech-5.09.33.17-dev.jar"
-    dest file("libs/gregtech-5.09.33.17-dev.jar")
+    src "http://jenkins.usrv.eu:8080/job/Gregtech-5-Unofficial/397/artifact/build/libs/gregtech-5.09.33.31-dev.jar"
+    dest file("libs/gregtech-5.09.33.31-dev.jar")
     mustRunAfter "deobfBinJar"
     mustRunAfter "repackMinecraft"
 }
