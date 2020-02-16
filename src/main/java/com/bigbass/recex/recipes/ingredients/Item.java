@@ -1,6 +1,6 @@
-package com.bigbass.recex.recipes;
+package com.bigbass.recex.recipes.ingredients;
 
-public class Item {
+public class Item implements IItem {
 	
 	/** amount */
 	public int a;

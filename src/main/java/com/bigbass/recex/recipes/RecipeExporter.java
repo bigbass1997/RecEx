@@ -6,12 +6,16 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
 import com.bigbass.recex.RecipeExporterMod;
 import com.bigbass.recex.recipes.gregtech.GregtechMachine;
 import com.bigbass.recex.recipes.gregtech.GregtechRecipe;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
+import com.bigbass.recex.recipes.ingredients.Fluid;
+import com.bigbass.recex.recipes.ingredients.Item;
+import com.bigbass.recex.recipes.ingredients.ItemOreDict;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -61,7 +65,7 @@ public class RecipeExporter {
 		sources.add(getShapedRecipes());
 		sources.add(getShapelessRecipes());
 		sources.add(getOreDictShapedRecipes());
-		//TODO Support Oredicted Shaped and Shapeless Ore recipes
+		//TODO Support OreDictShapelessRecipes
 		
 		root.put("sources", sources);
 		
@@ -155,58 +159,7 @@ public class RecipeExporter {
 		
 		return data;
 	}
-
-	private Object getOreDictShapedRecipes(){
-		Hashtable<String, Object> data = new Hashtable<>();
-
-		data.put("type", "shapedOre");
-
-		List<OreDictShapedRecipe> retRecipes = new ArrayList<>();
-		List<?> recipes = CraftingManager.getInstance().getRecipeList();
-		for(Object obj : recipes){
-			if(obj instanceof ShapedOreRecipe){
-				ShapedOreRecipe original = (ShapedOreRecipe) obj;
-				OreDictShapedRecipe rec = new OreDictShapedRecipe();
-
-				for(Object stack : original.getInput()){
-					if (stack instanceof ItemStack) {
-						Item item = RecipeUtil.formatRegularItemStack((ItemStack)stack);
-						rec.iI.add(item);
-					}else if (stack instanceof String){
-						rec.iI.add(new OreDictItem(getReplacements((String)stack).toArray(new Item[0])));
-					}else if (stack instanceof String[]){
-						Set<Item> multipleReplacemetns = new HashSet<>();
-						for (String s : (String[]) stack){
-							multipleReplacemetns.addAll(getReplacements((String)stack));
-						}
-						rec.iI.add(multipleReplacemetns.toArray(new Item[0]));
-					}else if (stack instanceof net.minecraft.item.Item){
-						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((net.minecraft.item.Item)stack)));
-					}else if (stack instanceof Block){
-						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((Block)stack,1,Short.MAX_VALUE)));
-					}
-				}
-
-				rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-
-				retRecipes.add(rec);
-			}
-		}
-		data.put("recipes", retRecipes);
-
-		return data;
-	}
-
-	private Set<Item> getReplacements(String name){
-		List<ItemStack> recipeItemList = OreDictionary.getOres(name);
-		Set<Item> replacements = new HashSet<>();
-		for (ItemStack inList : recipeItemList){
-			Item item = RecipeUtil.formatRegularItemStack(inList);
-			replacements.add(item);
-		}
-		return replacements;
-	}
-
+	
 	private Object getShapedRecipes(){
 		Hashtable<String, Object> data = new Hashtable<String, Object>();
 		
@@ -247,14 +200,11 @@ public class RecipeExporter {
 				ShapelessRecipe rec = new ShapelessRecipe();
 				
 				for(Object stack : original.recipeItems){
-					Item item = null;
 					if(stack instanceof ItemStack){
-						item = RecipeUtil.formatRegularItemStack((ItemStack) stack);
+						rec.iI.add(RecipeUtil.formatRegularItemStack((ItemStack) stack));
 					} else if(stack instanceof net.minecraft.item.Item){
-						item = RecipeUtil.formatRegularItemStack(new ItemStack((net.minecraft.item.Item) stack));
+						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((net.minecraft.item.Item) stack)));
 					}
-					
-					rec.iI.add(item);
 				}
 				
 				rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
@@ -264,6 +214,86 @@ public class RecipeExporter {
 		}
 		data.put("recipes", retRecipes);
 		
+		return data;
+	}
+	
+	private Object getOreDictShapedRecipes(){
+		Hashtable<String, Object> data = new Hashtable<String, Object>();
+
+		data.put("type", "shapedOreDict");
+
+		List<OreDictShapedRecipe> retRecipes = new ArrayList<OreDictShapedRecipe>();
+		List<?> recipes = CraftingManager.getInstance().getRecipeList();
+		for(Object obj : recipes){
+			if(obj instanceof ShapedOreRecipe){
+				ShapedOreRecipe original = (ShapedOreRecipe) obj;
+				OreDictShapedRecipe rec = new OreDictShapedRecipe();
+				
+				for(Object input : original.getInput()){
+					if(input instanceof ItemStack) {
+						rec.iI.add(RecipeUtil.formatRegularItemStack((ItemStack) input));
+					} else if (input instanceof String){
+						ItemOreDict item = RecipeUtil.parseOreDictionary((String) input);
+						if(item != null){
+							rec.iI.add(item);
+							RecipeExporterMod.log.info("input instanceof String : " + item.dns + ", " + item.ims);
+						}
+					} else if (input instanceof String[]){
+						ItemOreDict item = RecipeUtil.parseOreDictionary((String[]) input);
+						if(item != null){
+							rec.iI.add(item);
+							RecipeExporterMod.log.info("input instanceof String[] : " + item.dns + ", " + item.ims);
+						}
+					} else if (input instanceof net.minecraft.item.Item){
+						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((net.minecraft.item.Item)input)));
+					} else if (input instanceof Block){
+						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((Block)input,1,Short.MAX_VALUE)));
+					} else if (input instanceof ArrayList<?>) {
+						ArrayList<?> list = (ArrayList<?>) input;
+						if(list != null && list.size() > 0){
+							ItemOreDict item = new ItemOreDict();
+							for(Object listObj : list){
+								if(listObj instanceof ItemStack){
+									ItemStack stack = (ItemStack) listObj;
+									item.ims.add(RecipeUtil.formatRegularItemStack(stack));
+									
+									int[] ids = OreDictionary.getOreIDs(stack);
+									for(int id : ids){
+										String name = OreDictionary.getOreName(id);
+										if(name != null && !name.isEmpty() && !name.equalsIgnoreCase("Unknown")){
+											boolean isDuplicate = false;
+											for(String existing : item.dns){
+												if(existing.equalsIgnoreCase(name)){
+													isDuplicate = true;
+													break;
+												}
+											}
+											if(!isDuplicate){
+												item.dns.add(name);
+											}
+										}
+									}
+								}
+							}
+							
+							if(!item.ims.isEmpty()){
+								rec.iI.add(item);
+							}
+						}
+					} else if (input != null){
+						try {
+							RecipeExporterMod.log.warn("OreDict Input Type not parsed! " + input.getClass().getTypeName() + " | " + input.getClass().getName());
+						} catch(NullPointerException e){}
+					}
+				}
+				
+				rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
+				
+				retRecipes.add(rec);
+			}
+		}
+		data.put("recipes", retRecipes);
+
 		return data;
 	}
 	

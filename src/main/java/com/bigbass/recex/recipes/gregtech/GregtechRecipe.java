@@ -3,8 +3,8 @@ package com.bigbass.recex.recipes.gregtech;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bigbass.recex.recipes.Fluid;
-import com.bigbass.recex.recipes.Item;
+import com.bigbass.recex.recipes.ingredients.Fluid;
+import com.bigbass.recex.recipes.ingredients.Item;
 
 public class GregtechRecipe {
 	

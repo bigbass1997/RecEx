@@ -1,4 +1,4 @@
-package com.bigbass.recex.recipes;
+package com.bigbass.recex.recipes.ingredients;
 
 public class Fluid {
 	

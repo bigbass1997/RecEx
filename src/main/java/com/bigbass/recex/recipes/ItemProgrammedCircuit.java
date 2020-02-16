@@ -1,5 +1,7 @@
 package com.bigbass.recex.recipes;
 
+import com.bigbass.recex.recipes.ingredients.Item;
+
 public class ItemProgrammedCircuit extends Item {
 	
 	/** circuit config */
