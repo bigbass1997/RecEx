@@ -40,6 +40,12 @@ eclipse {
 		downloadSources = true
 	}
 }
+
+configurations {
+	shade
+	compile.extendsFrom shade
+}
+
 /* eclipse.classpath.file.withXml {x ->
 	def n = x.asNode()
 	n.classpathentry.find {
@@ -47,13 +53,20 @@ eclipse {
 	}.@sourcepath = 'libs/gregtech-5.09.33.31-src.zip'
 } */
 
-version = "0.0.2"
+version = "0.0.3"
 group = "com.bigbass.recex"
 archivesBaseName = "RecipeExporter"
 
 minecraft {
     version = "1.7.10-10.13.4.1614-1.7.10"
     runDir = "eclipse"
+	
+	srgExtra "PK: com/google repack/recex/com/google"
+	srgExtra "PK: javax/json repack/recex/javax/json"
+	srgExtra "PK: org/glassfish repack/recex/org/glassfish"
+	//srgExtra "PK: org/slf4j repack/recex/org/slf4j"
+	//srgExtra "PK: org/apache repack/recex/org/apache"
+	//srgExtra "PK: org/zeroturnaround repack/recex/org/zeroturnaround"
 }
 
 repositories {
@@ -99,10 +112,12 @@ dependencies {
 	compile "codechicken:CodeChickenCore:1.7.10-1.0.7.47:dev"
 	compile "codechicken:NotEnoughItems:1.7.10-1.0.5.120:dev"
 	
-	compile "com.google.code.gson:gson:2.7"
+	shade "com.google.code.gson:gson:2.7"
 	
-	compile "javax.json:javax.json-api:1.0"
-	compile "org.glassfish:javax.json:1.0.4"
+	shade "javax.json:javax.json-api:1.0"
+	shade "org.glassfish:javax.json:1.0.4"
+	
+	shade "net.lingala.zip4j:zip4j:2.3.1"
 	
 	compile fileTree(dir: 'libs', include: '*.jar')
 	compile fileTree(dir: 'libs', include: '*.zip')
@@ -136,4 +151,12 @@ processResources {
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+}
+
+jar {
+	configurations.shade.each { dep ->
+		from(project.zipTree(dep)){
+			exclude 'META-INF', 'META-INF/**'
+		}
+	}
 }

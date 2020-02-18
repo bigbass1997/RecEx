@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+
 import com.bigbass.recex.RecipeExporterMod;
 import com.bigbass.recex.recipes.gregtech.GregtechMachine;
 import com.bigbass.recex.recipes.gregtech.GregtechRecipe;
@@ -22,6 +23,10 @@ import com.google.gson.GsonBuilder;
 import gregtech.api.util.GT_LanguageManager;
 import gregtech.api.util.GT_Recipe;
 import gregtech.api.util.GT_Recipe.GT_Recipe_Map;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.model.enums.CompressionLevel;
+import net.lingala.zip4j.model.enums.CompressionMethod;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
@@ -298,8 +303,10 @@ public class RecipeExporter {
 	}
 	
 	private void saveData(String json){
+		final File saveFile = getSaveFile();
+		
 		try {
-			FileWriter writer = new FileWriter(getSaveFile());
+			FileWriter writer = new FileWriter(saveFile);
 			writer.write(json);
 			writer.close();
 			
@@ -307,6 +314,21 @@ public class RecipeExporter {
 		} catch (IOException | NullPointerException e) {
 			e.printStackTrace();
 			RecipeExporterMod.log.error("Recipes failed to save!");
+			return;
+		}
+		
+		final String zipPath = saveFile.getPath().replace(".json", ".zip");
+		final ZipFile zipFile = new ZipFile(new File(zipPath));
+		final ZipParameters zipParameters = new ZipParameters();
+		zipParameters.setCompressionMethod(CompressionMethod.DEFLATE);
+		zipParameters.setCompressionLevel(CompressionLevel.FASTEST);
+		
+		try {
+			zipFile.addFile(saveFile, zipParameters);
+			RecipeExporterMod.log.info("Recipes have been compressed.");
+		} catch(Exception e) {
+			e.printStackTrace();
+			RecipeExporterMod.log.warn("Recipe compression may have failed!");
 		}
 	}
 	
