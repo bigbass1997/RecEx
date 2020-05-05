@@ -1,20 +1,13 @@
 package com.bigbass.recex.recipes;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-
 import com.bigbass.recex.RecipeExporterMod;
-import com.bigbass.recex.recipes.gregtech.GregtechMachine;
 import com.bigbass.recex.recipes.gregtech.GregtechRecipe;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
+import com.bigbass.recex.recipes.serializers.ItemListSerializer;
+import com.bigbass.recex.recipes.serializers.MachineSerializer;
+import com.bigbass.recex.recipes.serializers.ModSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import gregtech.api.util.GT_LanguageManager;
 import gregtech.api.util.GT_Recipe;
 import gregtech.api.util.GT_Recipe.GT_Recipe_Map;
@@ -27,6 +20,14 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class RecipeExporter {
 	
@@ -67,7 +68,12 @@ public class RecipeExporter {
 
 		root.put("sources", sources);
 		
-		Gson gson = (new GsonBuilder()).serializeNulls().create();
+		Gson gson = new GsonBuilder()
+				.registerTypeAdapter(Mod.class, new ModSerializer())
+				.registerTypeAdapter(Machine.class, new MachineSerializer())
+				.registerTypeAdapter(ItemList.class, new ItemListSerializer())
+				.serializeNulls()
+				.create();
 		try {
 			saveData(gson.toJson(root));
 		} catch(Exception e){
@@ -84,18 +90,13 @@ public class RecipeExporter {
 	 * <p>This format does not impede the process of loading the recipes into NEP.</p>
 	 */
 	private Object getGregtechRecipes(){
-		Hashtable<String, Object> data = new Hashtable<String, Object>();
-		
-		data.put("type", "gregtech");
-		
-		List<GregtechMachine> machines = new ArrayList<GregtechMachine>();
+		List<Machine> machines = new ArrayList<Machine>();
 		for(GT_Recipe_Map map : GT_Recipe_Map.sMappings){
-			GregtechMachine mach = new GregtechMachine();
+			Machine mach = new Machine(GT_LanguageManager.getTranslation(map.mUnlocalizedName));
 			
 			// machine name retrieval
-			mach.n = GT_LanguageManager.getTranslation(map.mUnlocalizedName);
-			if(mach.n == null || mach.n.isEmpty()){
-				mach.n = map.mUnlocalizedName;
+			if(mach.name == null || mach.name.isEmpty()){
+				mach.name = map.mUnlocalizedName;
 			}
 			
 			for(GT_Recipe rec : map.mRecipeList){
@@ -148,22 +149,16 @@ public class RecipeExporter {
 					gtr.fO.add(fluid);
 				}
 				
-				mach.recs.add(gtr);
+				mach.recipes.add(gtr);
 			}
 			machines.add(mach);
 		}
 		
-		data.put("machines", machines);
-		
-		return data;
+		return new Mod("gregtech", machines);
 	}
 
-	private Object getOreDictShapedRecipes(){
-		Hashtable<String, Object> data = new Hashtable<>();
-
-		data.put("type", "shapedOre");
-
-		List<OreDictShapedRecipe> retRecipes = new ArrayList<>();
+	private Machine getOreDictShapedRecipes(){
+		List<Recipe> retRecipes = new ArrayList<>();
 		List<?> recipes = CraftingManager.getInstance().getRecipeList();
 		for(Object obj : recipes){
 			if(obj instanceof ShapedOreRecipe){
@@ -190,17 +185,12 @@ public class RecipeExporter {
 				retRecipes.add(rec);
 			}
 		}
-		data.put("recipes", retRecipes);
 
-		return data;
+		return new Machine("shapedOre", retRecipes);
 	}
 
-	private Object getOreDictShapelessRecipes(){
-		HashMap<String, Object> data = new HashMap<>();
-
-		data.put("type", "shapelessOre");
-
-		List<OreDictShapelessRecipe> retRecipes = new ArrayList<>();
+	private Machine getOreDictShapelessRecipes(){
+		List<Recipe> retRecipes = new ArrayList<>();
 		List<?> recipes = CraftingManager.getInstance().getRecipeList();
 		for(Object obj : recipes){
 			if(obj instanceof ShapelessOreRecipe){
@@ -227,9 +217,8 @@ public class RecipeExporter {
 				retRecipes.add(rec);
 			}
 		}
-		data.put("recipes", retRecipes);
 
-		return data;
+		return new Machine("shapelessOre", retRecipes);
 	}
 
 	private List<String> getOreDictNames(ItemStack itemStack){
@@ -241,19 +230,14 @@ public class RecipeExporter {
 		return names;
 	}
 
-	private Object getReplacements(){
-		HashMap<String, Object> data = new HashMap<>();
-
-		data.put("type", "replacements");
-
-		List<OreDictItem> oreDictItems = new ArrayList<>();
+	private ItemList getReplacements(){
+		List<ItemBase> oreDictItems = new ArrayList<>();
 		String[] oreNames = OreDictionary.getOreNames();
 		for(String name : oreNames){
 			oreDictItems.add(new OreDictItem(name, getReplacements(name)));
 		}
-		data.put("items", oreDictItems);
 
-		return data;
+		return new ItemList("replacements", oreDictItems);
 	}
 
 	private List<Item> getReplacements(String name){
@@ -266,12 +250,8 @@ public class RecipeExporter {
 		return new ArrayList<>(replacements);
 	}
 
-	private Object getShapedRecipes(){
-		Hashtable<String, Object> data = new Hashtable<String, Object>();
-		
-		data.put("type", "shaped");
-		
-		List<ShapedRecipe> retRecipes = new ArrayList<ShapedRecipe>();
+	private Machine getShapedRecipes(){
+		List<Recipe> retRecipes = new ArrayList<>();
 		List<?> recipes = CraftingManager.getInstance().getRecipeList();
 		for(Object obj : recipes){
 			if(obj instanceof ShapedRecipes){
@@ -288,17 +268,12 @@ public class RecipeExporter {
 				retRecipes.add(rec);
 			}
 		}
-		data.put("recipes", retRecipes);
 		
-		return data;
+		return new Machine("shaped", retRecipes);
 	}
 
-	private Object getShapelessRecipes(){
-		Hashtable<String, Object> data = new Hashtable<String, Object>();
-		
-		data.put("type", "shapeless");
-		
-		List<ShapelessRecipe> retRecipes = new ArrayList<ShapelessRecipe>();
+	private Machine getShapelessRecipes(){
+		List<Recipe> retRecipes = new ArrayList<>();
 		List<?> recipes = CraftingManager.getInstance().getRecipeList();
 		for(Object obj : recipes){
 			if(obj instanceof ShapelessRecipes){
@@ -321,9 +296,8 @@ public class RecipeExporter {
 				retRecipes.add(rec);
 			}
 		}
-		data.put("recipes", retRecipes);
 		
-		return data;
+		return new Machine("shapeless", retRecipes);
 	}
 	
 	private void saveData(String json){

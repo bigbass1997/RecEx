@@ -1,12 +1,13 @@
 package com.bigbass.recex.recipes.gregtech;
 
+import com.bigbass.recex.recipes.Fluid;
+import com.bigbass.recex.recipes.Item;
+import com.bigbass.recex.recipes.Recipe;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bigbass.recex.recipes.Fluid;
-import com.bigbass.recex.recipes.Item;
-
-public class GregtechRecipe {
+public class GregtechRecipe implements Recipe {
 	
 	/** enabled */
 	public boolean en;

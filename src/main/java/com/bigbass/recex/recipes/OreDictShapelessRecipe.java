@@ -3,7 +3,7 @@ package com.bigbass.recex.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OreDictShapelessRecipe {
+public class OreDictShapelessRecipe implements Recipe {
     /** input items */
     public List<Object> iI;
     /** output item */

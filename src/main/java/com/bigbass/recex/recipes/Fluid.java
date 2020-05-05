@@ -1,6 +1,6 @@
 package com.bigbass.recex.recipes;
 
-public class Fluid {
+public class Fluid implements ItemBase {
 	
 	/** amount */
 	public int a;

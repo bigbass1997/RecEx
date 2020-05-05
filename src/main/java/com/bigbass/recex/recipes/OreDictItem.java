@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 
 import java.util.List;
 
-public class OreDictItem {
+public class OreDictItem implements ItemBase {
     public String name;
     public List<Item> reps;
 

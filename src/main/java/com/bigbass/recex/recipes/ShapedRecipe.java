@@ -3,7 +3,7 @@ package com.bigbass.recex.recipes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShapedRecipe {
+public class ShapedRecipe implements Recipe {
 	
 	/** input items */
 	public List<Item> iI;
