@@ -1,6 +1,7 @@
 package com.bigbass.recex.recipes;
 
 import com.bigbass.recex.RecipeExporterMod;
+import com.bigbass.recex.recipes.exporters.ForestryRecipeExporter;
 import com.bigbass.recex.recipes.gregtech.GregtechRecipe;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
 import com.bigbass.recex.recipes.serializers.ItemListSerializer;
@@ -60,6 +61,7 @@ public class RecipeExporter {
 		
 		List<Object> sources = new ArrayList<Object>();
 		sources.add(getGregtechRecipes());
+		sources.add(new ForestryRecipeExporter().getForestryRecipes());
 		sources.add(getShapedRecipes());
 		sources.add(getShapelessRecipes());
 		sources.add(getOreDictShapedRecipes());

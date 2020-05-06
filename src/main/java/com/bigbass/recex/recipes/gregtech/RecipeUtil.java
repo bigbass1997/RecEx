@@ -27,6 +27,24 @@ public class RecipeUtil {
 		
 		return item;
 	}
+
+	public static Fluid formatRegularFluidStack(FluidStack stack) {
+		if (stack == null) {
+			return null;
+		}
+
+		Fluid fluid = new Fluid();
+
+		fluid.a = stack.amount;
+		try {
+			fluid.uN = stack.getUnlocalizedName();
+		} catch (Exception e) {}
+		try {
+			fluid.lN = stack.getLocalizedName();
+		} catch (Exception e) {}
+
+		return fluid;
+	}
 	
 	public static Item formatGregtechItemStack(ItemStack stack){
 		if(stack == null){
