@@ -3,7 +3,7 @@ package com.bigbass.recex.recipes.gregtech;
 import com.bigbass.recex.recipes.Fluid;
 import com.bigbass.recex.recipes.Item;
 import com.bigbass.recex.recipes.ItemProgrammedCircuit;
-
+import com.bigbass.recex.recipes.renderer.IconRenderer;
 import gregtech.api.util.GT_LanguageManager;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -24,7 +24,8 @@ public class RecipeUtil {
 		try {
 			item.lN = stack.getDisplayName();
 		} catch(Exception e){}
-		
+
+		IconRenderer.getInstance().printItemStack(stack, item.uN);
 		return item;
 	}
 
@@ -43,6 +44,7 @@ public class RecipeUtil {
 			fluid.lN = stack.getLocalizedName();
 		} catch (Exception e) {}
 
+		IconRenderer.getInstance().printFluidStack(stack, fluid.uN);
 		return fluid;
 	}
 	
@@ -68,7 +70,8 @@ public class RecipeUtil {
 		if(item.uN != null && !item.uN.isEmpty() && item.uN.equalsIgnoreCase("gt.integrated_circuit")){ // Programmed Circuit
 			item = new ItemProgrammedCircuit(item, stack.getItemDamage());
 		}
-		
+
+		IconRenderer.getInstance().printItemStack(stack, item.uN);
 		return item;
 	}
 	
@@ -94,7 +97,8 @@ public class RecipeUtil {
 				} catch(Exception e3){}
 			}
 		}
-		
+
+		IconRenderer.getInstance().printFluidStack(stack, fluid.uN);
 		return fluid;
 	}
 }

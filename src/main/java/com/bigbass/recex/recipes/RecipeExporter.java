@@ -4,6 +4,7 @@ import com.bigbass.recex.RecipeExporterMod;
 import com.bigbass.recex.recipes.exporters.ForestryRecipeExporter;
 import com.bigbass.recex.recipes.gregtech.GregtechRecipe;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
+import com.bigbass.recex.recipes.renderer.IconRenderer;
 import com.bigbass.recex.recipes.serializers.ItemListSerializer;
 import com.bigbass.recex.recipes.serializers.MachineSerializer;
 import com.bigbass.recex.recipes.serializers.ModSerializer;
@@ -58,6 +59,8 @@ public class RecipeExporter {
 	 */
 	public void run(){
 		Hashtable<String, Object> root = new Hashtable<String, Object>();
+
+		IconRenderer.getInstance().init();
 		
 		List<Object> sources = new ArrayList<Object>();
 		sources.add(getGregtechRecipes());
@@ -67,6 +70,8 @@ public class RecipeExporter {
 		sources.add(getOreDictShapedRecipes());
 		sources.add(getOreDictShapelessRecipes());
 		sources.add(getReplacements());
+
+		IconRenderer.getInstance().dispose();
 
 		root.put("sources", sources);
 		
