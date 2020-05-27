@@ -81,12 +81,15 @@ public class IconRenderer {
         before();
 
         // draw icon
+        RenderHelper.disableStandardItemLighting();
+        RenderHelper.enableGUIStandardItemLighting();
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
         renderItemAndEffectIntoGUI(textureManager, itemStack);
-        GL11.glDisable(GL11.GL_ALPHA_TEST);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        RenderHelper.enableStandardItemLighting();
 
         printPng(output);
         after();
@@ -193,13 +196,6 @@ public class IconRenderer {
         }
     }
 
-    private void enableGUIStandardItemLighting() {
-        GL11.glPushMatrix();
-        GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
-        RenderHelper.enableStandardItemLighting();
-        GL11.glPopMatrix();
-    }
-
     private RenderBlocks renderBlocks = RenderBlocks.getInstance();
     private boolean renderWithColor = true;
     private float zLevel = 0f;
@@ -242,13 +238,10 @@ public class IconRenderer {
                 GL11.glColor4f(r, g, b, 1.0F);
             }
 
-            RenderHelper.disableStandardItemLighting();
-            enableGUIStandardItemLighting();
             GL11.glRotatef(-90F, 0.0F, 1.0F, 0.0F);
             renderBlocks.useInventoryTint = inColor;
             customRenderer.renderItem(INVENTORY, item, renderBlocks);
             renderBlocks.useInventoryTint = true;
-            RenderHelper.enableStandardItemLighting();
             GL11.glPopMatrix();
         } else {
             GL11.glDisable(GL11.GL_LIGHTING);
@@ -315,13 +308,10 @@ public class IconRenderer {
                 GL11.glColor4f(r, g, b, 1.0F);
             }
 
-            RenderHelper.disableStandardItemLighting();
-            enableGUIStandardItemLighting();
             GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
             renderBlocks.useInventoryTint = this.renderWithColor;
             renderBlocks.renderBlockAsItem(block, itemDamage, 1.0F);
             renderBlocks.useInventoryTint = true;
-            RenderHelper.enableStandardItemLighting();
 
             if (block.getRenderBlockPass() == 0) {
                 GL11.glAlphaFunc(GL11.GL_GREATER, 0.1F);
