@@ -28,6 +28,7 @@ import org.lwjgl.opengl.GL30;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Base64;
 
 import static net.minecraftforge.client.IItemRenderer.ItemRenderType.INVENTORY;
 import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.INVENTORY_BLOCK;
@@ -111,7 +112,8 @@ public class IconRenderer {
     }
 
     private File getPngFile(String unlocalizedName) {
-        File output = new File(RecipeExporterMod.clientConfigDir.getParent() + "/RecEx-Icons/" + unlocalizedName + ".png");
+        String encodedUnlocalizedName = Base64.getEncoder().encodeToString(unlocalizedName.getBytes());
+        File output = new File(RecipeExporterMod.clientConfigDir.getParent() + "/RecEx-Icons/" + encodedUnlocalizedName + ".png");
         try {
             if(!output.exists()){
                 boolean result = output.getParentFile().mkdirs();
