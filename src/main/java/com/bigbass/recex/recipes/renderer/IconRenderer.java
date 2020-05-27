@@ -112,10 +112,13 @@ public class IconRenderer {
     }
 
     private File getPngFile(String unlocalizedName) {
+        if (unlocalizedName == null || unlocalizedName.isEmpty()) {
+            return null;
+        }
         String encodedUnlocalizedName = Base64.getEncoder().encodeToString(unlocalizedName.getBytes());
         File output = new File(RecipeExporterMod.clientConfigDir.getParent() + "/RecEx-Icons/" + encodedUnlocalizedName + ".png");
         try {
-            if(!output.exists()){
+            if(!output.getParentFile().exists()){
                 boolean result = output.getParentFile().mkdirs();
                 if (!result) {
                     throw new IOException("failed to create icon folder.");
