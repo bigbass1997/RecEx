@@ -23,6 +23,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL30;
 
 import java.io.File;
@@ -85,10 +86,12 @@ public class IconRenderer {
         RenderHelper.enableGUIStandardItemLighting();
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         TextureManager textureManager = Minecraft.getMinecraft().getTextureManager();
         renderItemAndEffectIntoGUI(textureManager, itemStack);
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
         GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
         RenderHelper.enableStandardItemLighting();
 
         printPng(output);
