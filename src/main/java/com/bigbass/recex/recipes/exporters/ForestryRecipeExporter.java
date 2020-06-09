@@ -16,9 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class ForestryRecipeExporter {
+public class ForestryRecipeExporter implements RecipeExporter {
 
-    public Mod getForestryRecipes() {
+    @Override
+    public Mod getRecipes() {
         List<Machine> machines = new ArrayList<>();
         machines.add(getCarpenterRecipes());
         machines.add(getCentrifugeRecipes());
