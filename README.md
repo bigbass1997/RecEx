@@ -1,4 +1,4 @@
-[![License: CC BY-NC-SA 4.0](https://licensebuttons.net/l/by-nc-sa/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ### Description
 RexEx is a recipe exporter mod for Minecraft. The mod is/will-be capable of exporting recipes for a wide range of other mods, not just vanilla recipes, including Gregtech 5.
 
@@ -24,9 +24,7 @@ The default keybind to open the exporter's GUI is 'k', however you should be abl
 Building the mod can be done using the gradle wrapper provided in the repo, with the command `gradlew build`.
 
 ### License
-This mod is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International, except where other licenses are included (Forge, FML, and Minecraft for example).
-
-A full copy of the project license can be viewed in "LICENSE.txt", and a summary plus additional links are provided in "LICENSE.md".
+This mod/sourcecode is licensed under the GNU General Public License v3, except where other licenses are included (Forge, FML, and Minecraft for example).
 
 ### Contributions
 If you are interested in contributing, feel free to submit issues or pull requests as you see fit. I'm sure there are things that could be programmed better or perhaps more efficiently, but since this is being developed alongside NotEnoughProduction and may change at any moment, I am not too worried about how good/bad the code is for the time being.
