@@ -1,0 +1,97 @@
+/* JSON Root */
+{
+	"sources" : [
+		{
+			"type" : "gregtech",
+			"machines" : [
+				{
+					"n" : "Machine1",
+					"recs" : [
+						{
+							"en" : true,
+							"dur" : 0,
+							"eut" : 0,
+							"iI" : [
+								{}
+							],
+							"iO" : [
+								{}
+							],
+							"fI" : [
+								{}
+							],
+							"fO" : [
+								{}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"type" : "shapeless",
+			"recipes" : [
+				{
+					"iI" : [
+						{}
+					],
+					"o" : {}
+				}
+			]
+		},
+		{
+			"type" : "shaped",
+			"recipes" : [
+				{
+					"iI" : [
+						{}
+					],
+					"o" : {}
+				}
+			]
+		},
+		{
+			"type" : "shapedOreDict",
+			"recipes" : [
+				{
+					"iI" : [
+						{}
+					],
+					"o" : {}
+				}
+			]
+		}
+	]
+}
+
+/* ItemProgrammedCircuit */
+{
+	"a" : 0,
+	"uN" : "",
+	"lN" : "",
+	"cfg" : 0
+}
+
+/* Item */
+{
+	"a" : 0,
+	"uN" : "",
+	"lN" : ""
+}
+
+/* Fluid */
+{
+	"a" : 0,
+	"uN" : "",
+	"lN" : ""
+}
+
+/* ItemOreDict */
+{
+	"dns" : [
+		""
+	],
+	"ims" : [
+		{}
+	]
+}
