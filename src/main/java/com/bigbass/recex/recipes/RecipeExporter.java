@@ -17,6 +17,7 @@ import gregtech.api.util.GT_Recipe.GT_Recipe_Map;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.fluids.FluidStack;
@@ -72,6 +73,7 @@ public class RecipeExporter {
 		sources.add(getOreDictShapedRecipes());
 		sources.add(getOreDictShapelessRecipes());
 		sources.add(getReplacements());
+		sources.add(getFurnaceRecipes());
 
 		IconRenderer.getInstance().dispose();
 
@@ -307,6 +309,18 @@ public class RecipeExporter {
 		}
 		
 		return new Machine("shapeless", retRecipes);
+	}
+
+	private Machine getFurnaceRecipes() {
+		List<Recipe> recipes = new ArrayList<>();
+		Map<ItemStack, ItemStack> smeltingList = FurnaceRecipes.smelting().getSmeltingList();
+		for (Map.Entry<ItemStack, ItemStack> entry : smeltingList.entrySet()) {
+			FurnaceRecipe recipe = new FurnaceRecipe();
+			recipe.i = RecipeUtil.formatRegularItemStack(entry.getKey());
+			recipe.o = RecipeUtil.formatRegularItemStack(entry.getValue());
+			recipes.add(recipe);
+		}
+		return new Machine("furnace", recipes);
 	}
 	
 	private void saveData(String json){
