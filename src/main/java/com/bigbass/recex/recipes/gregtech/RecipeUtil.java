@@ -8,7 +8,11 @@ import gregtech.api.util.GT_LanguageManager;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import java.util.regex.Pattern;
+
 public class RecipeUtil {
+
+	private static Pattern pattern = Pattern.compile("(?i)" + '\u00a7' + "[0-9A-FK-OR]");
 	
 	public static Item formatRegularItemStack(ItemStack stack){
 		if(stack == null){
@@ -22,7 +26,7 @@ public class RecipeUtil {
 			item.uN = stack.getUnlocalizedName();
 		} catch(Exception e){}
 		try {
-			item.lN = stack.getDisplayName();
+			item.lN = pattern.matcher(stack.getDisplayName()).replaceAll("");
 		} catch(Exception e){}
 
 		IconRenderer.getInstance().printItemStack(stack, item.uN);
@@ -41,7 +45,7 @@ public class RecipeUtil {
 			fluid.uN = stack.getUnlocalizedName();
 		} catch (Exception e) {}
 		try {
-			fluid.lN = stack.getLocalizedName();
+			fluid.lN = pattern.matcher(stack.getLocalizedName()).replaceAll("");
 		} catch (Exception e) {}
 
 		IconRenderer.getInstance().printFluidStack(stack, fluid.uN);
@@ -60,10 +64,10 @@ public class RecipeUtil {
 			item.uN = stack.getUnlocalizedName();
 		} catch(Exception e){}
 		try {
-			item.lN = stack.getDisplayName();
+			item.lN = pattern.matcher(stack.getDisplayName()).replaceAll("");
 		} catch(Exception e1){
 			try {
-				item.lN = GT_LanguageManager.getTranslation(stack.getUnlocalizedName());
+				item.lN = pattern.matcher(GT_LanguageManager.getTranslation(stack.getUnlocalizedName())).replaceAll("");
 			} catch(Exception e2){}
 		}
 		
@@ -87,13 +91,13 @@ public class RecipeUtil {
 			fluid.uN = stack.getUnlocalizedName();
 		} catch(Exception e){}
 		try {
-			fluid.lN = GT_LanguageManager.getTranslation(stack.getUnlocalizedName());
+			fluid.lN = pattern.matcher(GT_LanguageManager.getTranslation(stack.getUnlocalizedName())).replaceAll("");
 		} catch(Exception e1){
 			try {
-				fluid.lN = stack.getFluid().getName();
+				fluid.lN = pattern.matcher(stack.getFluid().getName()).replaceAll("");
 			} catch(Exception e2){
 				try {
-					fluid.lN = stack.getLocalizedName();
+					fluid.lN = pattern.matcher(stack.getLocalizedName()).replaceAll("");
 				} catch(Exception e3){}
 			}
 		}
