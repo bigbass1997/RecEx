@@ -348,7 +348,12 @@ public class IconRenderer {
                 OpenGlHelper.glBlendFunc(770, 771, 1, 0);
                 textureManager.bindTexture(item.getSpriteNumber() == 0 ? TextureMap.locationBlocksTexture : TextureMap.locationItemsTexture);
                 IIcon iicon = item.getIcon(itemStack, itemStackColor);
-                int i1 = itemStack.getItem().getColorFromItemStack(itemStack, itemStackColor);
+                int i1;
+                try {
+                    i1 = itemStack.getItem().getColorFromItemStack(itemStack, itemStackColor);
+                } catch (Exception e) {
+                    i1 = 16777215;
+                }
                 float r = (float)(i1 >> 16 & 255) / 255.0F;
                 float g = (float)(i1 >> 8 & 255) / 255.0F;
                 float b = (float)(i1 & 255) / 255.0F;
