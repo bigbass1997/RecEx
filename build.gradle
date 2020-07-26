@@ -24,12 +24,14 @@ buildscript {
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT"
 		classpath "de.undercouch:gradle-download-task:3.1.2"
+		classpath "com.github.jengelman.gradle.plugins:shadow:2.0.1"
     }
 }
 
 import de.undercouch.gradle.tasks.download.Download
 apply plugin: 'forge'
 apply plugin: 'eclipse'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 eclipse {
 	classpath {
@@ -48,9 +50,29 @@ version = "0.0.1"
 group = "com.bigbass.recex"
 archivesBaseName = "RecipeExporter"
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 minecraft {
     version = "1.7.10-10.13.4.1614-1.7.10"
     runDir = "eclipse"
+}
+
+jar {
+	finalizedBy shadowJar
+	manifest {
+		attributes 'Main-Class': 'com.bigbass.recex'
+	}
+}
+
+shadowJar {
+	configurations = [project.configurations.shadow]
+	relocate 'ar.com.hjg.pngj', 'com.bigbass.recex.pngj'
+	classifier ''
+}
+
+reobf {
+	shadowJar {}
 }
 
 repositories {
@@ -95,12 +117,14 @@ dependencies {
     compile "codechicken:CodeChickenLib:1.7.10-1.1.3.138:dev"
 	compile "codechicken:CodeChickenCore:1.7.10-1.0.7.47:dev"
 	compile "codechicken:NotEnoughItems:1.7.10-1.0.5.120:dev"
-	
+	compile "net.sengir.forestry:forestry_1.7.10:4.2.9.57:dev"
+
 	compile "com.google.code.gson:gson:2.7"
-	
+	shadow "ar.com.hjg:pngj:2.1.0"
+
 	compile "javax.json:javax.json-api:1.0"
 	compile "org.glassfish:javax.json:1.0.4"
-	
+
 	compile fileTree(dir: 'libs', include: '*.jar')
 	compile fileTree(dir: 'libs', include: '*.zip')
 }
